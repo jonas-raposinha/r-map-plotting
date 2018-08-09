@@ -7,7 +7,7 @@ First and foremost, we obviously need to get our hands on a map. There are sever
 
 ```
 library(rgdal) #Package for handling maps in the very useful shapefile format
-library(tidyverse) #Package-world of its own with lots of handy stuff
+library(tidyverse) #Package-world-of-its-own with lots of handy stuff
 shp.world <- readOGR(dsn = "world_borders", layer = "ne_50m_admin_0_countries")
 plot(shp.world)
 ```
