@@ -49,3 +49,28 @@ wrong.iso3 <- data_select$COUNTRY[is.na(match(data_select$COUNTRY,shp.world$ISO_
 wrong.iso3
 [1] "FRA"    "NOR"    "RS-SRB" "RS-XKX"
 ```
+
+As we can see, ISO-3 codes differ for France, Norway, Serbia and Kosovo, which we need to fix for them to be compatible.
+
+```
+levels(shp.world$ISO_A3) <- c(levels(shp.world$ISO_A3), wrong.iso3) #Changing codes for France, Norway, Serbia and Kosovo to fit the                                                                          data file
+shp.world$ISO_A3[match(c("France", "Norway", "Serbia", "Kosovo"), shp.world$NAME)] <- wrong.iso3
+```
+
+In this data file, the resistance level is given as a categorical variable, fitting our intention to colour countries according to binned values. Please note that the actual numerical values can be found in the yearly reports of EARS-NET and CAESAR (above links). To introduce colour data into the map file, we first translate resistance level to colour and then use the ISO-3 codes to match this to the map.
+
+```
+color_select_vect <- c("0_1", "1_5", "5_10", "10_25", "25_50", "50+", "DNP", "NO_DATA_LESS10") #Resistance level                                                                                                                         ($PROPORTION_CATEGORICAL) 
+color_name_vect <- c("#006400", "#a6d96a", "#e5e500", "#fd9a61", "#e2001a", "#650d0e", "grey", "grey") #Colours for map
+data_select$color <- color_name_vect[match(data_select$PROPORTION_CATEGORICAL, color_select_vect)]
+shp.world$res <- data_select$color[match(shp.world$ISO_A3, data_select$COUNTRY)]
+```
+
+We are now ready to do the first plot.
+
+```
+plot(shp.world, col=shp.world$res, xlim = c(-25, 170), ylim = c(45, 80))
+```
+
+[!plot 3](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/03.png)
+ 
