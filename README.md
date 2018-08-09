@@ -124,10 +124,19 @@ Finally, we plot it together with our map.
 ```
 plot(map_select, col=map_select$res, xlim = c(-25, 170), ylim = c(45, 80))
 plot(mask_subset, density = c(25), angle = c(45), xlim = c(-25, 170), ylim = c(45, 80), add = TRUE)
-points(serb_kos_points, col = "white", pch = 16, cex = 0.3)
+points(serb_kos_points, col = "white", pch = 16, cex = 0.1)
 ```
 
 ![plot 6](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/06.png)
 ![plot 6 zoomed](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/06_02.png)
 
+It looks reasonable, although the points are not actually evenly spread out along the line. If someone can figure out how to do that, please let me know.
+Now, we need to add a plot title and legend. Let’s start easy and put the colours.
+
+```
+title(main = "Multidrug-resistant Klebsiella pneumoniae in 2016", cex.main = 1)
+legend("topleft", legend = c("0 -< 1%", "1 -< 5%", "5 -< 10%", "10 -< 25", "25 -< 50", "> 50%", "NA"), fill = c(color_name_vect[1:7]), bty="n", cex = 1)
+```
+
+![plot 7](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/07.png)
 
