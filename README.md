@@ -73,4 +73,12 @@ plot(shp.world, col=shp.world$res, xlim = c(-25, 170), ylim = c(45, 80))
 ```
 
 ![plot 3](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/03.png)
- 
+
+Not too bad! Let’s clean it up a bit by removing countries not included in the data though.
+
+```
+map_select <- shp.world[-which(is.na(shp.world$res)),] #Removes all countries not in the data set
+plot(map_select, col=map_select$res, xlim = c(-25, 170), ylim = c(45, 80))
+```
+
+![plot 4](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/04.png)
