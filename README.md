@@ -150,4 +150,61 @@ legend("topleft", legend = c("", "", "", "", "", "", "Level B data",""), density
 
 ![plot 8](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/08.png)
 
+Now we have a pretty nice plot already. However, since we are plotting a map of a large part of the Eurasian continent, we do have to consider the projection of our map (the operation of turning a spherical surface into a flat one). Without getting into much detail here (partly since I don’t remember my projective geometry as well as I probably should), the default projection (the one used above) is called “mercator” and has been around since the 16th century. As commonly used as it is, it does cause major distortions to the sizes of geographical objects, particularly when comparing those close to the equator to those closer to the poles. There are many alternative projections, and here I chose the “Albers Equal-Area” projection (that conserves area but distorts shape, you can’t have it all!) as an example of how to implement them using spTransform().
 
+```
+world_proj <- spTransform(map_select, CRS("+proj=aea")) #+proj=aea gives the Albers equal-area projection
+plot(world_proj, col = world_proj$res)
+```
+
+![plot 9](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/09.png)
+
+As we can see, the default parameters of CRS (Coordinate Reference System) do not centre the map quite where we want it. Finding the appropriate values can seem daunting, but we can often put our faith in the great reference collection at [Spatial Reference](http://spatialreference.org/). For example we can use the Albers Equal Area definition from the Space Research Institute in Moscow, Russia (SR-ORG: 8568) as a blueprint and then play around with the parameters until we are satisfied. 
+Bonus tip: the recommended projection for European maps is the “Lambert Equal-Area”, try the reference EPSG:3035.
+
+```
+world_proj <- spTransform(map_select, CRS("+proj=aea +lat_1=50 +lat_2=70 +lat_0=56 +lon_0=100 +datum=WGS84 +units=m +no_defs"))
+plot(world_proj, col = world_proj$res)
+```
+
+![plot 10](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/10.png)
+
+The shapes look better, but the map is perhaps a bit to focused on Russia (not surprising, since that is what the reference was made for). Also, we would like a bit less curvature. This is easily remedied by changing the projection centre longitude (lon_0) and the first standard parallel (lat_1) respectively. You can read more about the parameters at the [Proj4 website](https://proj4.org/operations/projections/aea.html). To adjust limits, we recall the coordinate transformation and fiddle around until we find a good fit.
+
+```
+world_proj <- spTransform(map_select, CRS("+proj=aea +lat_1=40 +lat_2=70 +lat_0=56 +lon_0=70+datum=WGS84 +units=m +no_defs"))
+plot(world_proj, col = world_proj$res, xlim=c(-600000,300000), ylim=c(-2500000,4500000))
+```
+
+![plot 11](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/11.png)
+
+Better still! To add the other 2 plot layers, these must be transformed as well. Note that the spsample() is placed after the transformation (you can place it before as well, but I find it comes out a bit better this way). 
+
+```
+world_proj <- spTransform(map_select, CRS("+proj=aea +lat_1=40 +lat_2=70 +lat_0=56 +lon_0=70 +datum=WGS84 +units=m +no_defs")) 
+mask_proj <- spTransform(mask_subset, CRS("+proj=aea +lat_1=40 +lat_2=70 +lat_0=56 +lon_0=70 +datum=WGS84 +units=m +no_defs"))
+serb_kos_proj <- spTransform(serb_kos_int, CRS("+proj=aea +lat_1=40 +lat_2=70 +lat_0=56 +lon_0=70 +datum=WGS84 +units=m +no_defs"))
+serb_kos_points <- spsample(serb_kos_proj, 20, "regular")
+class(serb_kos_points)
+ [1] "SpatialPoints"
+ attr(,"package")
+ [1] "sp"
+```
+
+And to finally print the plots, we add everything up together. Printing pdf is nice since it’s vector-based and can be opened on most machines. You can change it png for use in ppt or similar, although I usually prefer creating image files from pdf:s using Inkscape or similar. Also, pdf can be used to print several pages in the same document (just keep on adding new plot calls before you finish with dev.off()), which can be neat. For printing, the plot lines looked a bit too thick, so we add a lwd to the plot calls.
+
+```
+pdf("plot_name.pdf", w=15, h=10, pointsize = 1)
+plot(world_proj, col = world_proj$res, xlim=c(-600000,300000), ylim=c(-2500000,4500000), lwd = 0.7)
+plot(mask_proj, density = c(25), angle = c(45), lwd = 0.7, add = T)
+points(serb_kos_points, col = "white", pch = 16, cex = 0.3)
+title(main = "Multidrug-resistant Klebsiella pneumoniae in 2016", cex.main = 3.5)
+legend("topleft", legend = c("0 -< 1%", "1 -< 5%", "5 -< 10%", "10 -< 25", "25 -< 50", "> 50%", "", "NA"), fill = c(color_name_vect[1:6], "white", "grey"), bty="n", cex = 3.5)
+legend("topleft", legend = c("", "", "", "", "", "", "Level B data",""), density=c(0, 0, 0, 0, 0, 0, 20, 0), angle = c(45), bty="n", cex = 3.5)
+dev.off()
+```
+
+![plot 12](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/12.png)
+![plot 12 zoomed](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/12_02.png)
+
+And there we have it! A nicely coloured map with two additional layers, all using base plot. I actually tried to replicate this using ggplot, but ran into all kinds of issues with the second layer (lines), the legend and other things, so I just left it at that. If anyone could show me a way to do that, I would be most impressed. What is very convenient to do in ggplot though, is a gradient map for a continuous variable, which I will add shortly.
