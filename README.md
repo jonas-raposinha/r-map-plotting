@@ -205,6 +205,6 @@ dev.off()
 ```
 
 ![plot 12](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/12.png)
-![plot 12 zoomed](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/12_02.png)
+![plot 12 zoomed](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/12_2.png)
 
 And there we have it! A nicely coloured map with two additional layers, all using base plot. I actually tried to replicate this using ggplot, but ran into all kinds of issues with the second layer (lines), the legend and other things, so I just left it at that. If anyone could show me a way to do that, I would be most impressed. What is very convenient to do in ggplot though, is a gradient map for a continuous variable, which I will add shortly.
