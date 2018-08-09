@@ -140,3 +140,14 @@ legend("topleft", legend = c("0 -< 1%", "1 -< 5%", "5 -< 10%", "10 -< 25", "25 -
 
 ![plot 7](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/07.png)
 
+The legend for the “shaded” areas can be added in the same way. In order to combine then, however, we will create a space for that extra box in the first legend and then overlay.
+
+```
+title(main = "Multidrug-resistant Klebsiella pneumoniae in 2016", cex.main = 1)
+legend("topleft", legend = c("0 -< 1%", "1 -< 5%", "5 -< 10%", "10 -< 25", "25 -< 50", "> 50%", "", "NA"), fill = c(color_name_vect[1:6], "white", "grey"), bty="n", cex = 1)
+legend("topleft", legend = c("", "", "", "", "", "", "Level B data",""), density=c(0, 0, 0, 0, 0, 0, 20, 0), angle = c(45), bty="n", cex = 1)
+```
+
+![plot 8](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/08.png)
+
+
