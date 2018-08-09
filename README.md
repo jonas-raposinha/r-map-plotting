@@ -29,13 +29,13 @@ catresdata <- read.table("AMR_20_EN.csv", sep = ",", header = TRUE, stringsAsFac
                          col.names = c("COUNTRY", "EVIDENCE_LEVEL_AMR",
                                        "PROPORTION_CATEGORICAL", "YEAR", "VALUE"))
 head(catresdata)
-  COUNTRY EVIDENCE_LEVEL_AMR PROPORTION_CATEGORICAL YEAR VALUE
-1     ALB            LEVEL_A         NO_DATA_LESS10 2015     1
-2     AND            LEVEL_A                    DNP 2015     1
-3     ARM            LEVEL_A         NO_DATA_LESS10 2015     1
-4     AUT            LEVEL_A                    1_5 2015     1
-5     AZE            LEVEL_A         NO_DATA_LESS10 2015     1
-6     BLR            LEVEL_B                    50+ 2015     1
+   COUNTRY EVIDENCE_LEVEL_AMR PROPORTION_CATEGORICAL YEAR VALUE
+ 1     ALB            LEVEL_A         NO_DATA_LESS10 2015     1
+ 2     AND            LEVEL_A                    DNP 2015     1
+ 3     ARM            LEVEL_A         NO_DATA_LESS10 2015     1
+ 4     AUT            LEVEL_A                    1_5 2015     1
+ 5     AZE            LEVEL_A         NO_DATA_LESS10 2015     1
+ 6     BLR            LEVEL_B                    50+ 2015     1
 
 data_select <-
   catresdata %>% 
@@ -47,7 +47,7 @@ It’s always good to check that the content is consistent with international st
 ```
 wrong.iso3 <- data_select$COUNTRY[is.na(match(data_select$COUNTRY,shp.world$ISO_A3))]
 wrong.iso3
-[1] "FRA"    "NOR"    "RS-SRB" "RS-XKX"
+ [1] "FRA"    "NOR"    "RS-SRB" "RS-XKX"
 ```
 
 As we can see, ISO-3 codes differ for France, Norway, Serbia and Kosovo, which we need to fix for them to be compatible.
@@ -98,3 +98,36 @@ plot(mask_subset, density = c(25), angle = c(45), add = TRUE)
 ```
 
 ![plot 5](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/05.png)
+
+Sweet! Next, we would like to highlight the border between Serbia and Kosovo since this is a matter of dispute. This might seem like an insignificant detail, but would be required in official documents (where we would refer to it in accordance with United Nations Security Council resolution 1244 of 1999). Also, this gives us an opportunity to explore the rgeos package a bit.
+First, we isolate the areas of Serbia and Kosovo and calculate the intersection between the polygons.
+
+```
+library(rgeos)
+kos_set <- map_select[map_select$ISO_A3 %in% "RS-XKX",]
+serb_set <- map_select[map_select$ISO_A3 %in% c("RS-SRB"),]
+serb_kos_int <- gIntersection(serb_set, kos_set) #Calculates the intersection between the polygons
+class(serb_kos_int)
+ [1] "SpatialLines"
+ attr(,"package")
+ [1] "sp"
+```
+
+The class of the latter is “SpatialLines”, so we would like to make this into points to plot a dotted line. For this, we sample a number of points along the line. 
+
+```
+serb_kos_points <- spsample(serb_kos_int, 20, "regular")
+```
+
+Finally, we plot it together with our map. 
+
+```
+plot(map_select, col=map_select$res, xlim = c(-25, 170), ylim = c(45, 80))
+plot(mask_subset, density = c(25), angle = c(45), xlim = c(-25, 170), ylim = c(45, 80), add = TRUE)
+points(serb_kos_points, col = "white", pch = 16, cex = 0.3)
+```
+
+![plot 6](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/06.png)
+![plot 6 zoomed](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/06_02.png)
+
+
