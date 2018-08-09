@@ -14,7 +14,7 @@ plot(shp.world)
 
 ![plot 1](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/01.png)
 
-To check out Eurasia, we can alter the coordinates until we find an appropriate window, for example:
+To check out Eurasia (and a bit of Africa too), we can alter the coordinates until we find an appropriate window, for example:
 
 ```
 plot(shp.world, col = "grey", xlim = c(70, 150), ylim = c(35, 90))
@@ -22,3 +22,30 @@ plot(shp.world, col = "grey", xlim = c(70, 150), ylim = c(35, 90))
 
 ![plot 2](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/02.png)
  
+We then load the data file from the [European Health Information Gateway](https://gateway.euro.who.int/en/datasets/), containing levels of resistance against antibiotics (in this case percentage of invasive isolates of Klebsiella pneumoniae with combined resistance to fluoroquinolones, third-generation cephalosporins and aminoglycosides) from 2015 and 2016. For starters, we extract the data from 2016.
+
+```
+catresdata <- read.table("AMR_20_EN.csv", sep = ",", header = TRUE, stringsAsFactors = FALSE,
+                         col.names = c("COUNTRY", "EVIDENCE_LEVEL_AMR",
+                                       "PROPORTION_CATEGORICAL", "YEAR", "VALUE"))
+head(catresdata)
+  COUNTRY EVIDENCE_LEVEL_AMR PROPORTION_CATEGORICAL YEAR VALUE
+1     ALB            LEVEL_A         NO_DATA_LESS10 2015     1
+2     AND            LEVEL_A                    DNP 2015     1
+3     ARM            LEVEL_A         NO_DATA_LESS10 2015     1
+4     AUT            LEVEL_A                    1_5 2015     1
+5     AZE            LEVEL_A         NO_DATA_LESS10 2015     1
+6     BLR            LEVEL_B                    50+ 2015     1
+
+data_select <-
+  catresdata %>% 
+  filter(YEAR == 2016)
+```
+
+It’s always good to check that the content is consistent with international standards, in this case the ISO 3166-1 alpha-3 codes, which are easy to use when cross referencing data sources and maps. 
+
+```
+wrong.iso3 <- data_select$COUNTRY[is.na(match(data_select$COUNTRY,shp.world$ISO_A3))]
+wrong.iso3
+[1] "FRA"    "NOR"    "RS-SRB" "RS-XKX"
+```
