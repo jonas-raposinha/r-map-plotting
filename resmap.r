@@ -1,4 +1,4 @@
-# Plots Europe map and colour countries according to EARS-NET/CAESAR resistance proportions (csv), latest update 2018-08-07
+# Plots map of Eurasia and colours countries according to EARS-NET/CAESAR resistance proportions (csv) and level of evidence
 
 rm(list=ls())
 library(rgdal)
