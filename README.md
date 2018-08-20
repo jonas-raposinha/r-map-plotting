@@ -223,16 +223,14 @@ lan_map$lan <- c("Stockholm", "Uppsala", "Södermanland", "Östergötland", "Jö
 lan_map <- data.frame(0:20) # Regional codes 1-20
 ```
 
-Then we read the data (extracted from the Swedish Board of Health and Welfare database) and filter it on the year, data measure, sex and age group.
-
-use_raw <- read.table("sos_antibiotikastat.csv", sep=";", header=T, stringsAsFactors = F, dec = ",", encoding="UTF-8") #check.names = F for real col names
+Then we read the data (extracted from the Swedish Board of Health and Welfare database) and filter it on the year, region (whole country) and sex and age groups.
 
 ```
+use_raw <- read.table("sos_antibiotikastat.csv", sep=";", header=T, stringsAsFactors = F, dec = ",", encoding="UTF-8") #check.names = F for real col names
 colnames(use_raw)[1:5] <- c("year", "measure", "region", "sex", "age")
 use_data <-
   use_raw %>%
   filter(year == 2017) %>%
-  filter(measure == "Recept/1000 invånare") %>%
   filter(sex == "Båda könen") %>%
   filter(region != "Riket") %>%
   filter(str_detect(age, "0.85+")) #%>% # stringr regex "." used to avoid issues with the "-" separator
@@ -265,7 +263,7 @@ We can now match the prescription numbers to the correct region (as done above).
 shapefile_df$use <- use_data$Antibiotika[match(shapefile_df$id, use_data$code)] 
 ```
 
-Time for the first plot. In ggplot(), the geom_polygon is useful for drawing regions connected by lines. The x and y are provided by longitudes and latitudes from the map file and the 'fill' by our prescription data column.
+Time for the first plot. In ggplot(), the geom_polygon is useful for drawing regions connected by lines. The 'x' and 'y' are provided by longitudes and latitudes from the map file and the 'fill' by our prescription data column.
 
 ```
 gg <- ggplot() + geom_polygon(data=shapefile_df, aes(x=long, y=lat, group = group, fill=shapefile_df$use), size = 0.1, colour="black")
@@ -274,7 +272,7 @@ gg
 
 ![plot 14](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/14.png)
 
-Ok, so it looks a bit squeezed. I find it easier to deal with that when printing the plot, so bear with me. First we need to fix the gradient, since I prefer darker colours to represent higher numbers. We specify this in scale_fill_gradient, in which we can also add a title to the gradient legend. The neat thing about ggplot() is that we can just keep adding stuff to the plot object the we created.
+Ok, so it looks a bit squeezed. I find it easier to deal with that when printing the plot, so bear with me. First we need to fix the gradient, since I prefer darker colours to represent higher numbers. We specify this in scale_fill_gradient(), in which we can also add a title to the gradient legend. The neat thing about ggplot() is that we can just keep adding stuff to the plot object the we created.
 
 ```
 gg <- gg + scale_fill_gradient(name=filter_text[2], low = "steelblue1", high = "midnightblue", guide = "colourbar")
@@ -283,7 +281,7 @@ gg
 
 ![plot 15](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/15.png)
 
-That's better. Now we take care of the axis labels and for the title, I like to use str_wrap() to force new lines. There are other ways but this plays well with sprintf() that I often use for plot titles (not here though, since the databse is in Swedish). We can also add a caption if we like.
+That's better. Now we take care of the axis labels. For the plot title, I like to use str_wrap() to force new lines. There are other ways but this one plays well with sprintf() that I often use for plot titles (not here though, since the meta data is in Swedish). We can also add a caption if we like.
 
 ```
 gg <- gg + labs(title=str_wrap("J01 excl. metenamin prescriptions, all ages, both sexes for 2017", 45), y="", x="", caption="Source: Swedish Board of Health and Welfare")
@@ -292,7 +290,7 @@ gg
 
 ![plot 16](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/16.png)
 
-I find the background distracting, so we remove it, on element at the time.
+I find the background distracting, so let's remove it one element at a time.
 
 ```
 gg <- gg + theme(panel.grid.major = element_blank(), 
@@ -306,7 +304,7 @@ gg
 
 ![plot 17](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/17.png)
 
-Finally, it's time to print the plot. First though, we need to adjust the text sizes.
+Finally, it's time to print the plot (with some adjustments to text sizes for readability).
 
 ```
 gg <- gg + theme(plot.title=element_text(size=24, face="bold", lineheight=1.2),
