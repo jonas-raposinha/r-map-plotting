@@ -98,7 +98,7 @@ plot(mask_subset, density = c(25), angle = c(45), add = TRUE)
 
 ![plot 5](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/05.png)
 
-Sweet! Next, we would like to highlight the border between Serbia and Kosovo since this is a matter of dispute. This might seem like an insignificant detail, but would be required in official documents (where we would refer to it in accordance with United Nations Security Council resolution 1244 of 1999). Also, this gives us an opportunity to explore the rgeos package a bit.
+Sweet! Next, we would like to highlight the border between Serbia and Kosovo since this is a matter of dispute. This might seem like an insignificant detail, but would be required in official documents (where we would refer to it in accordance with United Nations Security Council resolution 1244 of 1999). Also (and perhaps more importantly), this gives us an opportunity to explore the 'rgeos' package a bit.
 First, we isolate the areas of Serbia and Kosovo and calculate the intersection between the polygons.
 
 ```
