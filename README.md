@@ -133,7 +133,7 @@ points(serb_kos_points, col = "white", pch = 16, cex = 0.1)
 ![plot 6](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/06.png)
 ![plot 6 zoomed](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/06_02.png)
 
-It looks reasonable, although the points are not actually evenly spread out along the line. If someone can figure out how to do that, please let me know.
+It looks reasonable, although the points are not actually evenly spread out along the line. I was unable to solve this and again, if anyone figures it out, please let me know.
 Now, we need to add a plot title and legend. Let’s start easy and put the colours.
 
 ```
