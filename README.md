@@ -42,7 +42,7 @@ data_select <-
   filter(YEAR == 2016)
 ```
 
-It’s always good to check that the content is consistent with international standards, in this case the ISO 3166-1 alpha-3 codes, which are easy to use when cross referencing data sources and maps. 
+It’s always good to check that the content is consistent with international standards, in this case the ISO 3166-1 alpha-3 codes, which are easy to use when cross referencing data sources and map areas. 
 
 ```
 wrong.iso3 <- data_select$COUNTRY[is.na(match(data_select$COUNTRY,shp.world$ISO_A3))]
