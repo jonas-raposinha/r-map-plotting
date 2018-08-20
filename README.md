@@ -269,7 +269,16 @@ Time for the first plot. In ggplot(), the geom_polygon is useful for drawing reg
 
 ```
 gg <- ggplot() + geom_polygon(data=shapefile_df, aes(x=long, y=lat, group = group, fill=shapefile_df$use), size = 0.1, colour="black")
+gg
 ```
 
 ![plot 14](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/14.png)
 
+Ok, so it looks a bit squeezed. I find it easier to deal with that when printing the plot, so bear with me. First we need to fix the gradient, since I prefer darker colours to represent higher numbers. We specify this in scale_fill_gradient, in which we can also add a title to the gradient legend. The neat thing about ggplot() is that we can just keep adding stuff to the plot object the we created.
+
+```
+gg <- gg + scale_fill_gradient(name=filter_text[2], low = "steelblue1", high = "midnightblue", guide = "colourbar")
+gg
+```
+
+![plot 15](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/15.png)
