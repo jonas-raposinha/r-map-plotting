@@ -282,3 +282,39 @@ gg
 ```
 
 ![plot 15](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/15.png)
+
+That's better. Now we take care of the axis labels and for the title, I like to use str_wrap() to force new lines. There are other ways but this plays well with sprintf() that I often use for plot titles (not here though, since the databse is in Swedish). We can also add a caption if we like.
+
+```
+gg <- gg + labs(title=str_wrap("J01 excl. metenamin prescriptions, all ages, both sexes for 2017", 45), y="", x="", caption="Source: Swedish Board of Health and Welfare")
+gg
+```
+
+![plot 16](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/16.png)
+
+I find the background distracting, so we remove it, on element at the time.
+
+```
+gg <- gg + theme(panel.grid.major = element_blank(), 
+                 panel.grid.minor = element_blank(), 
+                 panel.background = element_blank(),
+                 axis.text.x = element_blank(),
+                 axis.text.y = element_blank(),
+                 axis.ticks = element_blank())
+gg
+```
+
+![plot 17](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/17.png)
+
+Finally, it's time to print the plot. First though, we need to adjust the text sizes.
+
+```
+gg <- gg + theme(plot.title=element_text(size=24, face="bold", lineheight=1.2),
+                 plot.caption=element_text(size=20, hjust=1.8),
+                 legend.title=element_text(size=20, face="bold"),
+                 legend.text=element_text(size=20),
+                 legend.key.size = unit(2, "cm"),)
+gg
+```
+
+![plot 17](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/17.png)
