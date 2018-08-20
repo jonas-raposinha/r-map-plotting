@@ -206,4 +206,12 @@ dev.off()
 ![plot 12](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/12.png)
 ![plot 12 zoomed](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/12_2.png)
 
-And there we have it! A nicely coloured map with two additional layers, all using base plot. I actually tried to replicate this using ggplot, but ran into all kinds of issues with the second layer (lines), the legend and other things, so I just left it at that. If anyone could show me a way to do that, I would be most impressed. What is very convenient to do in ggplot though, is a gradient map for a continuous variable, which I will add shortly.
+And there we have it! A nicely coloured map with two additional layers, all using base plot. I actually tried to replicate this using ggplot(), but ran into all kinds of issues with the second layer (lines), the legend and other things, so I just left it at that. If anyone could show me a way to do that, I would be most impressed. What is very convenient to do in ggplot() though, is a gradient map for a continuous variable, so let's try that.
+
+For this, let's plot some regional data on antibiotic prescriptions in Sweden (also publicly available online). Just to mix it up a bit I'll be using a map of Sweden assembled by [ESRI Sweden](https://www.arcgis.com/home/item.html?id=912b806e3b864b5f83596575a2f7cb01).
+
+```
+shp.sweden <- readOGR(dsn = "Lan_SCB", layer = "Länsgränser_SCB_07") 
+plot(shp.sweden)
+```
+![plot 13](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/13.png)
