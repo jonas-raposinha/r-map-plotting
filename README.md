@@ -249,4 +249,27 @@ for(k in 1:nrow(lan_map)){
 
 All packages within the Tidyverse (including ggplot2) like data to be ["tidy"](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html), which shapefile data are not. Fortunately, they have made the conversion easy for us.
 
+```
+class(shp.sweden)
+ [1] "SpatialPolygonsDataFrame"
+ attr(,"package")
+ [1] "sp"
+shapefile_df <- broom::tidy(shp.sweden)
+class(shapefile_df)
+ [1] "tbl_df"     "tbl"        "data.frame"
+```
+
+We can now match the prescription numbers to the correct region (as done above).
+
+```
+shapefile_df$use <- use_data$Antibiotika[match(shapefile_df$id, use_data$code)] 
+```
+
+Time for the first plot. In ggplot(), the geom_polygon is useful for drawing regions connected by lines. The x and y are provided by longitudes and latitudes from the map file and the 'fill' by our prescription data column.
+
+```
+gg <- ggplot() + geom_polygon(data=shapefile_df, aes(x=long, y=lat, group = group, fill=shapefile_df$use), size = 0.1, colour="black")
+```
+
+![plot 14](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/14.png)
 
