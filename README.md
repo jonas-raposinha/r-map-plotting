@@ -321,4 +321,4 @@ dev.off()
 
 ![plot 18](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/18.png)
 
-As we can see, ggplot() has a somewhat more logical syntax than base plot, (at least once you get used to it), and setting up a gradient map like this one is quite straight forward. For more customized plots though, I prefer the versitility (sometimes rather idiosyncrasy) of base plot. Just my opinion, folks!
+As we can see, ggplot() has a somewhat more logical syntax than base plot, (at least once you get used to it), and setting up a gradient map like this one is quite straight forward. For more customized plots though, I prefer the versatility (sometimes rather idiosyncrasy) of base plot.
