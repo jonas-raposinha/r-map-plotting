@@ -215,3 +215,38 @@ shp.sweden <- readOGR(dsn = "Lan_SCB", layer = "Länsgränser_SCB_07")
 plot(shp.sweden)
 ```
 ![plot 13](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/13.png)
+
+We specify the names of the regions so that they will be printes correctly. 
+
+```
+lan_map$lan <- c("Stockholm", "Uppsala", "Södermanland", "Östergötland", "Jönköping", "Kronoberg", "Kalmar", "Gotland", "Blekinge", "Skåne", "Halland", "Västra Götaland", "Värmland", "Örebro", "Västmanland", "Dalarna", "Gävleborg", "Västernorrland", "Jämtland", "Västerbotten", "Norrbotten")
+lan_map <- data.frame(0:20) # Regional codes 1-20
+```
+
+Then we read the data (extracted from the Swedish Board of Health and Welfare database) and filter it on the year, data measure, sex and age group.
+
+use_raw <- read.table("sos_antibiotikastat.csv", sep=";", header=T, stringsAsFactors = F, dec = ",", encoding="UTF-8") #check.names = F for real col names
+
+```
+colnames(use_raw)[1:5] <- c("year", "measure", "region", "sex", "age")
+use_data <-
+  use_raw %>%
+  filter(year == 2017) %>%
+  filter(measure == "Recept/1000 invånare") %>%
+  filter(sex == "Båda könen") %>%
+  filter(region != "Riket") %>%
+  filter(str_detect(age, "0.85+")) #%>% # stringr regex "." used to avoid issues with the "-" separator
+```
+
+We map the regional codes to facilitate matching the prescirption values.
+
+```
+use_data$code <- NA
+for(k in 1:nrow(lan_map)){
+  use_data$code[grep(lan_map$lan[k], use_data$region)] <- lan_map$X0.20[k]
+}
+```
+
+All packages within the Tidyverse (including ggplot2) like data to be ["tidy"](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html), which shapefile data are not. Fortunately, they have made the conversion easy for us.
+
+
