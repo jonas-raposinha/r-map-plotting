@@ -86,8 +86,7 @@ plot(map_select, col=map_select$res, xlim = c(-25, 170), ylim = c(45, 80))
 As you may have noticed, the dataset also includes information about the level of evidence (essentially, a measure of data quality). We would also like to include this in our plot in a way that does not mess with our colour scheme. Firstly, we isolate the countries with B level evidence.
 
 ```
-mask_subset <- map_select[map_select$ISO_A3 %in% #All rows in map.select corresponding to the country codes that have LEVEL_B evidence level                         
-data_select$COUNTRY[ grep("LEVEL_B", data_select$EVIDENCE_LEVEL_AMR)],]
+mask_subset <- map_select[map_select$ISO_A3 %in% data_select$COUNTRY[grep("LEVEL_B", data_select$EVIDENCE_LEVEL_AMR)],]
 ```
 
 We can then plot that on top of our colour layer as a pattern, say lines at 45 degrees.
