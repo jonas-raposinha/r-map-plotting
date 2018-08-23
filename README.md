@@ -236,7 +236,7 @@ use_data <-
   filter(str_detect(age, "0.85+")) #%>% # stringr regex "." used to avoid issues with the "-" separator
 ```
 
-We map the regional codes to facilitate matching the prescirption values.
+We map the regional codes to facilitate matching the prescription values.
 
 ```
 use_data$code <- NA
