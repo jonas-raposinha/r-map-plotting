@@ -263,7 +263,7 @@ We can now match the prescription numbers to the correct region (as done above).
 shapefile_df$use <- use_data$Antibiotika[match(shapefile_df$id, use_data$code)] 
 ```
 
-Time for the first plot. In ggplot(), the geom_polygon is useful for drawing regions connected by lines. The 'x' and 'y' are provided by longitudes and latitudes from the map file and the 'fill' by our prescription data column.
+Time for the first plot. In ggplot(), the geom_polygon is useful for drawing regions connected by lines. The 'x' and 'y' are provided by longitudes and latitudes from the map file, 'fill' by our prescription data column and 'colour' refers to the borders.
 
 ```
 gg <- ggplot() + geom_polygon(data=shapefile_df, aes(x=long, y=lat, group = group, fill=shapefile_df$use), size = 0.1, colour="black")
@@ -272,16 +272,16 @@ gg
 
 ![plot 14](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/14.png)
 
-Ok, so it looks a bit squeezed. I find it easier to deal with that when printing the plot, so bear with me. First we need to fix the gradient, since I prefer darker colours to represent higher numbers. We specify this in scale_fill_gradient(), in which we can also add a title to the gradient legend. The neat thing about ggplot() is that we can just keep adding stuff to the plot object the we created.
+Ok, so it looks a bit squeezed. I find that easier to deal with when printing the plot, so let's just ignore it for now. We do need to fix the gradient though, since darker colours better represent higher numbers than vice versa. We specify this through scale_fill_gradient(), in which we can also add a title to the gradient legend. The neat thing about ggplot() is that we can just keep adding stuff to the plot object the we created.
 
 ```
-gg <- gg + scale_fill_gradient(name=filter_text[2], low = "steelblue1", high = "midnightblue", guide = "colourbar")
+gg <- gg + scale_fill_gradient(name = filter_text[2], low = "steelblue1", high = "midnightblue", guide = "colourbar")
 gg
 ```
 
 ![plot 15](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/15.png)
 
-That's better. Now we take care of the axis labels. For the plot title, I like to use str_wrap() to force new lines. There are other ways but this one plays well with sprintf() that I often use for plot titles (not here though, since the meta data is in Swedish). We can also add a caption if we like.
+That's better. Now we take care of the axis labels. I like to use str_wrap() to force new lines in plots texts. There are other ways but this one plays well with sprintf() that I often use for plot titles (not here though, since the meta data is in Swedish). We can also add a caption if we like.
 
 ```
 gg <- gg + labs(title=str_wrap("J01 excl. metenamin prescriptions, all ages, both sexes for 2017", 45), y="", x="", caption="Source: Swedish Board of Health and Welfare")
