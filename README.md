@@ -5,7 +5,7 @@ I work in public health and often find myself looking for intuitive approaches t
 
 First and foremost, we obviously need to get our hands on a map. There are several sources for up-to-date world and country maps. Here, I use [Natural Earth](https://www.naturalearthdata.com/) 1:50’000’000. Plotting this gives:
 
-```
+```R
 library(rgdal) #Package for handling maps in the very useful shapefile format
 library(tidyverse) #Package-world-of-its-own with lots of handy stuff
 shp.world <- readOGR(dsn = "world_borders", layer = "ne_50m_admin_0_countries")
@@ -16,7 +16,7 @@ plot(shp.world)
 
 To check out Eurasia (and a bit of Africa too), we can alter the coordinates until we find an appropriate window, for example:
 
-```
+```python
 plot(shp.world, col = "grey", xlim = c(70, 150), ylim = c(35, 90))
 ```
 
