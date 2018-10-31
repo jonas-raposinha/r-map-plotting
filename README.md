@@ -272,7 +272,7 @@ gg
 
 ![plot 14](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/14.png)
 
-Ok, so it looks a bit squeezed. I find that easier to deal with when printing the plot, so let's just ignore it for now. We do need to fix the gradient though, since darker colours better represent higher numbers than vice versa. We specify this through scale_fill_gradient(), in which we can also add a title to the gradient legend. The neat thing about ggplot() is that we can just keep adding stuff to the plot object the we created.
+Ok, so it looks a bit squeezed. I find that easier to deal with when printing the plot, so let's just ignore it for now. We do need to fix the gradient though, since darker colours better represent higher numbers than vice versa. We specify this through scale_fill_gradient(), in which we can also add a title to the gradient legend. The neat thing about ggplot() is that we can just keep adding stuff to the plot object that we created.
 
 ```R
 gg <- gg + scale_fill_gradient(name = filter_text[2], low = "steelblue1", high = "midnightblue", guide = "colourbar")
