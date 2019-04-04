@@ -7,7 +7,6 @@ First and foremost, we obviously need to get our hands on a map. There are sever
 
 ```R
 library(rgdal) #Package for handling maps in the very useful shapefile format
-library(tidyverse) #Package-world-of-its-own with lots of handy stuff, including ggplot
 shp.world <- readOGR(dsn = "world_borders", layer = "ne_50m_admin_0_countries")
 plot(shp.world)
 ```
@@ -37,9 +36,7 @@ head(catresdata)
  5     AZE            LEVEL_A         NO_DATA_LESS10 2015     1
  6     BLR            LEVEL_B                    50+ 2015     1
 
-data_select <-
-  catresdata %>% 
-  filter(YEAR == 2016)
+data_select <- catresdata[catresdata$YEAR == 2016,]
 ```
 
 It’s always good to check that the content is consistent with international standards, in this case the ISO 3166-1 alpha-3 codes, which are easy to use when cross referencing data sources and map areas. 
@@ -206,117 +203,4 @@ dev.off()
 ![plot 12](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/12.png)
 ![plot 12 zoomed](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/12_2.png)
 
-And there we have it! A nicely coloured map with two additional layers, all using base plot. I actually tried to replicate this using ggplot(), but ran into all kinds of issues with the second layer (lines), the legend and other things, so I just left it at that. If anyone could show me a way to do that, I would be most impressed. 
-
-What is very convenient to do in ggplot() though, is a gradient map for a continuous variable, so let's try that. For this, let's plot some regional data on antibiotic prescriptions in Sweden (also publicly available online). Just to mix it up a bit I'll be using a map of Sweden assembled by [ESRI Sweden](https://www.arcgis.com/home/item.html?id=912b806e3b864b5f83596575a2f7cb01).
-
-```R
-shp.sweden <- readOGR(dsn = "Lan_SCB", layer = "Länsgränser_SCB_07") 
-plot(shp.sweden)
-```
-![plot 13](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/13.png)
-
-We specify the names of the regions so that they will be printes correctly. 
-
-```R
-lan_map$lan <- c("Stockholm", "Uppsala", "Södermanland", "Östergötland", "Jönköping", "Kronoberg", "Kalmar", "Gotland", "Blekinge", "Skåne", "Halland", "Västra Götaland", "Värmland", "Örebro", "Västmanland", "Dalarna", "Gävleborg", "Västernorrland", "Jämtland", "Västerbotten", "Norrbotten")
-lan_map <- data.frame(0:20) # Regional codes 1-20
-```
-
-Then we read the data (extracted from the Swedish Board of Health and Welfare database) and filter it on the year, region (whole country) and sex and age groups.
-
-```R
-use_raw <- read.table("sos_antibiotikastat.csv", sep=";", header=T, stringsAsFactors = F, dec = ",", encoding="UTF-8") #check.names = F for real col names
-colnames(use_raw)[1:5] <- c("year", "measure", "region", "sex", "age")
-use_data <-
-  use_raw %>%
-  filter(year == 2017) %>%
-  filter(sex == "Båda könen") %>%
-  filter(region != "Riket") %>%
-  filter(str_detect(age, "0.85+")) #%>% # stringr regex "." used to avoid issues with the "-" separator
-```
-
-We map the regional codes to facilitate matching the prescription values.
-
-```R
-use_data$code <- NA
-for(k in 1:nrow(lan_map)){
-  use_data$code[grep(lan_map$lan[k], use_data$region)] <- lan_map$X0.20[k]
-}
-```
-
-All packages within the Tidyverse (including ggplot2) like data to be ["tidy"](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html), which shapefile data are not. Fortunately, they have made the conversion easy for us.
-
-```R
-class(shp.sweden)
- [1] "SpatialPolygonsDataFrame"
- attr(,"package")
- [1] "sp"
-shapefile_df <- broom::tidy(shp.sweden)
-class(shapefile_df)
- [1] "tbl_df"     "tbl"        "data.frame"
-```
-
-We can now match the prescription numbers to the correct region (as done above).
-
-```R
-shapefile_df$use <- use_data$Antibiotika[match(shapefile_df$id, use_data$code)] 
-```
-
-Time for the first plot. In ggplot(), the geom_polygon is useful for drawing regions connected by lines. The 'x' and 'y' are provided by longitudes and latitudes from the map file, 'fill' by our prescription data column and 'colour' refers to the borders.
-
-```R
-gg <- ggplot() + geom_polygon(data=shapefile_df, aes(x=long, y=lat, group = group, fill=shapefile_df$use), size = 0.1, colour="black")
-gg
-```
-
-![plot 14](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/14.png)
-
-Ok, so it looks a bit squeezed. I find that easier to deal with when printing the plot, so let's just ignore it for now. We do need to fix the gradient though, since darker colours better represent higher numbers than vice versa. We specify this through scale_fill_gradient(), in which we can also add a title to the gradient legend. The neat thing about ggplot() is that we can just keep adding stuff to the plot object that we created.
-
-```R
-gg <- gg + scale_fill_gradient(name = filter_text[2], low = "steelblue1", high = "midnightblue", guide = "colourbar")
-gg
-```
-
-![plot 15](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/15.png)
-
-That's better. Now we take care of the axis labels. I like to use str_wrap() to force new lines in plots texts. There are other ways but this one plays well with sprintf() that I often use for plot titles (not here though, since the meta data is in Swedish). We can also add a caption if we like.
-
-```R
-gg <- gg + labs(title=str_wrap("J01 excl. metenamin prescriptions, all ages, both sexes for 2017", 45), y="", x="", caption="Source: Swedish Board of Health and Welfare")
-gg
-```
-
-![plot 16](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/16.png)
-
-I find the background distracting, so let's remove it one element at a time.
-
-```R
-gg <- gg + theme(panel.grid.major = element_blank(), 
-                 panel.grid.minor = element_blank(), 
-                 panel.background = element_blank(),
-                 axis.text.x = element_blank(),
-                 axis.text.y = element_blank(),
-                 axis.ticks = element_blank())
-gg
-```
-
-![plot 17](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/17.png)
-
-Finally, it's time to print the plot (with some adjustments to text sizes for readability).
-
-```R
-gg <- gg + theme(plot.title=element_text(size=24, face="bold", lineheight=1.2),
-                 plot.caption=element_text(size=20, hjust=1.8),
-                 legend.title=element_text(size=20, face="bold"),
-                 legend.text=element_text(size=20),
-                 legend.key.size = unit(2, "cm"),)
-pdf("swemap.pdf", w=10, h=15, pointsize = 1) #Sets an aspect ratio that fits the plot
-gg
-dev.off()
-```
-
-![plot 18](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/18.png)
-
-As we can see, ggplot() has a somewhat more logical syntax than base plot, (at least once you get used to it), and setting up a gradient map like this one is quite straight forward. For more customized plots though, I prefer the versatility (sometimes rather idiosyncrasy) of base plot.
+And there we have it! A nicely coloured map with two additional layers, all using base plot. I actually tried to replicate this using ggplot(), but ran into issues with the second layer (lines), the legend and other things, so I just left it at that. 
