@@ -3,7 +3,6 @@
 rm(list=ls())
 library(rgdal)
 library(rgeos)
-library(tidyverse)
 
 ##Reads the world map shapefile (Natural Earth, Admin 0 - Countries)
 shp.world <- readOGR(dsn = "world_borders", 
@@ -14,16 +13,14 @@ catresdata <- read.table("AMR_20_EN.csv", sep=",",
                          header = T, stringsAsFactors = F,
                          col.names = c("COUNTRY", "EVIDENCE_LEVEL_AMR", "PROPORTION_CATEGORICAL", "YEAR", "VALUE")) #Categorical data from European Health Information Gateway
 data_select <-
-  catresdata %>% 
-  filter(YEAR == 2016)
+  catresdata[catresdata$YEAR == 2016,]
 
 ##Detects entries in ne_50m_admin_0_countries that lack ISO 3166-1 alpha-3 codes
 wrong.iso3 <- data_select$COUNTRY[
                                   is.na(
                                     match(
                                       data_select$COUNTRY,shp.world$ISO_A3))]
-levels(shp.world$ISO_A3) <- c(
-                              levels(shp.world$ISO_A3), wrong.iso3) #Adding Norway and France and changing codes for Serbia and Kosovo to fit the data file
+levels(shp.world$ISO_A3) <- c(levels(shp.world$ISO_A3), wrong.iso3) #Adding Norway and France and changing codes for Serbia and Kosovo to fit the data file
 shp.world$ISO_A3[match(c("France", "Norway", "Serbia", "Kosovo"), shp.world$NAME)] <- wrong.iso3
 
 ##Adds a column for colouring countries according to resistance level
