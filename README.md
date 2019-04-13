@@ -203,4 +203,4 @@ dev.off()
 ![plot 12](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/12.png)
 ![plot 12 zoomed](https://github.com/jonas-raposinha/r-map-plotting/blob/master/images/12_2.png)
 
-And there we have it! A nicely coloured map with two additional layers, all using base plot. I actually tried to replicate this using ggplot(), but ran into issues with the second layer (lines), the legend and other things, so I just left it at that. 
+And there we have it! A nicely coloured map with two additional layers, all using base plot. I actually tried to replicate this using ggplot(), but ran into issues with the second layer (lines), the legend and other things, so in the end I settled for a [gradient map of a continous variable](https://github.com/jonas-raposinha/r-map-api-data).
