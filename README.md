@@ -187,7 +187,7 @@ serb_kos_proj <- spTransform(serb_kos_int, CRS("+proj=aea +lat_1=40 +lat_2=70 +l
 serb_kos_points <- spsample(serb_kos_proj, 20, "regular")
 ```
 
-And to finally print the plots, we add everything up together. Printing pdf is nice since it’s vector-based and can be opened on most machines. You can change it png for use in ppt or similar, although I usually prefer creating image files from pdf:s using Inkscape or similar. Also, pdf can be used to print several pages in the same document (just keep on adding new plot calls before you finish with dev.off()), which can be neat. For printing, the plot lines looked a bit too thick, so we add a lwd to the plot calls.
+And to finally print the plots, we add everything up together. Printing pdf is nice since it’s vector-based and can be opened on most machines. You can change it to png for use in ppt or similar, although I usually prefer creating image files from pdf:s using Inkscape or similar. Also, pdf can be used to print several pages in the same document (just keep on adding new plot calls before you finish with dev.off()), which can be neat. For printing, the plot lines looked a bit too thick, so we add a lwd to the plot calls.
 
 ```R
 pdf("plot_name.pdf", w=15, h=10, pointsize = 1)
